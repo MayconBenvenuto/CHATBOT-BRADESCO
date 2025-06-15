@@ -15,7 +15,7 @@ export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="flex flex-wrap justify-between items-center h-auto py-2 sm:py-3 min-h-[3.5rem] sm:min-h-[4rem] gap-1 sm:gap-2">            <div className="flex items-center min-w-0 max-w-[70%] sm:max-w-none">
               <img src="/logo-bradesco.png" alt="Logo Bradesco Seguros" className="w-20 xs:w-24 sm:w-32 h-auto object-contain rounded-lg overflow-hidden" />
-              <span className="ml-1 sm:ml-2 text-xs xs:text-sm sm:text-xl font-bold text-gray-900 truncate">Planos de Saúde</span>
+              <span className="ml-1 sm:ml-2 text-xs xs:text-sm sm:text-xl font-bold text-gray-900 truncate">Planos Empresariais</span>
             </div>
             <nav className="hidden md:flex flex-wrap space-x-4 sm:space-x-8 mt-2 md:mt-0">
               <a href="#beneficios" className="text-gray-700 hover:text-bradesco-red text-sm sm:text-base">Benefícios</a>
