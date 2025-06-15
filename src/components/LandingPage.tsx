@@ -14,9 +14,8 @@ export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
     <div className="min-h-screen">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-          <div className="flex flex-wrap justify-between items-center h-auto min-h-[4rem] gap-2">            <div className="flex items-center min-w-0">
-              <img src="/1.png" alt="Logo Bradesco Seguros" className="w-32 h-12 object-contain" />
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">          <div className="flex flex-wrap justify-between items-center h-auto min-h-[4rem] gap-2">            <div className="flex items-center min-w-0">
+              <img src="/logo-bradesco.png" alt="Logo Bradesco Seguros" className="w-32 h-12 object-contain" />
               <span className="ml-2 text-base sm:text-xl font-bold text-gray-900 truncate">Planos de Saúde Empresas</span>
             </div>
             <nav className="hidden md:flex flex-wrap space-x-4 sm:space-x-8 mt-2 md:mt-0">
@@ -34,7 +33,7 @@ export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
           </div>
         </div>
       </header>      {/* Hero Section */}
-      <section className="bg-bradesco-blue bg-cover bg-center bg-no-repeat relative text-white py-12 sm:py-20">
+      <section className="bg-cover bg-center bg-no-repeat relative text-white py-12 sm:py-20" style={{ backgroundImage: "url('/edf-bradesco.png')" }}>
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
