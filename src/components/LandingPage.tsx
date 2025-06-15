@@ -3,17 +3,38 @@ import DifferentialsSection from "./DifferentialsSection";
 import TestimonialsSection from "./TestimonialsSection";
 import CTASection from "./CTASection";
 import Footer from "./Footer";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, MessageCircle } from "lucide-react";
 
 interface LandingPageProps {
   onOpenChatbot: () => void;
 }
 
 export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
+  // Função para abrir o WhatsApp com mensagem predefinida
+  const openWhatsApp = () => {
+    const phone = "5581882420323"; // Formato: código do país + DDD + número
+    const message = encodeURIComponent("Olá! Gostaria de mais informações e valores dos planos Bradesco..");
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+  };
+
   return (
-    <div className="min-h-screen">      {/* Header */}      <header className="bg-white shadow-sm sticky top-0 z-40">
+    <div className="min-h-screen">
+      {/* WhatsApp Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <button 
+          onClick={openWhatsApp}
+          className="bg-green-500 hover:bg-green-600 text-white rounded-full w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+          aria-label="Fale com um consultor pelo WhatsApp"
+        >
+          <MessageCircle className="w-7 h-7 sm:w-8 sm:h-8" />
+        </button>
+      </div>
+
+      {/* Header */}
+      <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-          <div className="flex flex-wrap justify-between items-center h-auto py-2 sm:py-3 min-h-[3.5rem] sm:min-h-[4rem] gap-1 sm:gap-2">            <div className="flex items-center min-w-0 max-w-[70%] sm:max-w-none">
+          <div className="flex flex-wrap justify-between items-center h-auto py-2 sm:py-3 min-h-[3.5rem] sm:min-h-[4rem] gap-1 sm:gap-2">
+            <div className="flex items-center min-w-0 max-w-[70%] sm:max-w-none">
               <img src="/logo-bradesco.png" alt="Logo Bradesco Seguros" className="w-20 xs:w-24 sm:w-32 h-auto object-contain rounded-lg overflow-hidden" />
               <span className="ml-1 sm:ml-2 text-xs xs:text-sm sm:text-xl font-bold text-gray-900 truncate">Planos Empresariais</span>
             </div>
@@ -21,7 +42,9 @@ export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
               <a href="#beneficios" className="text-gray-700 hover:text-bradesco-red text-sm sm:text-base">Benefícios</a>
               <a href="#diferenciais" className="text-gray-700 hover:text-bradesco-red text-sm sm:text-base">Diferenciais</a>
               <a href="#depoimentos" className="text-gray-700 hover:text-bradesco-red text-sm sm:text-base">Depoimentos</a>
-              <a href="#contato" className="text-gray-700 hover:text-bradesco-red text-sm sm:text-base">Contato</a>            </nav>            <button
+              <a href="#contato" className="text-gray-700 hover:text-bradesco-red text-sm sm:text-base">Contato</a>
+            </nav>
+            <button
               onClick={onOpenChatbot}
               className="bg-bradesco-red text-white px-2 sm:px-3 py-1 sm:py-2 rounded-lg hover:bg-primary-hover transition-colors font-semibold w-auto text-[10px] xs:text-xs sm:text-base"
             >
@@ -29,7 +52,8 @@ export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
             </button>
           </div>
         </div>
-      </header>      {/* Hero Section */}
+      </header>
+      {/* Hero Section */}
       <section className="bg-cover bg-center bg-no-repeat relative text-white py-6 xs:py-8 sm:py-12 md:py-20" style={{ backgroundImage: "url('/edf-bradesco.png')" }}>
         <div className="absolute inset-0 bg-black opacity-65"></div>
         <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 relative z-10">
@@ -42,7 +66,8 @@ export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
               <p className="text-xs xs:text-sm sm:text-base lg:text-xl mb-3 sm:mb-5 md:mb-8 text-gray-100">
                 Proteja sua empresa e seus colaboradores com o melhor plano de saúde do mercado. 
                 Cobertura completa, atendimento humanizado e economia garantida.
-              </p>              <div className="flex flex-col xs:flex-row gap-2 sm:gap-4">
+              </p>
+              <div className="flex flex-col xs:flex-row gap-2 sm:gap-4">
                 <button
                   onClick={onOpenChatbot}
                   className="bg-bradesco-red text-white px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 rounded-lg hover:bg-primary-hover transition-colors font-semibold text-xs xs:text-sm sm:text-base lg:text-lg w-full xs:w-auto"
@@ -56,7 +81,8 @@ export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
                   Saiba Mais
                 </button>
               </div>
-            </div>            <div className="relative mt-4 xs:mt-5 sm:mt-6 lg:mt-0">
+            </div>
+            <div className="relative mt-4 xs:mt-5 sm:mt-6 lg:mt-0">
               <div className="bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 xs:p-3 sm:p-5 lg:p-8">
                 <h3 className="text-sm xs:text-base sm:text-xl lg:text-2xl font-bold mb-1.5 xs:mb-2 sm:mb-3 lg:mb-4">Por que escolher a Bradesco Seguros?</h3>
                 <div className="space-y-1.5 xs:space-y-2 sm:space-y-3">
