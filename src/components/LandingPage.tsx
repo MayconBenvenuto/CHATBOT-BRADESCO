@@ -12,7 +12,7 @@ interface LandingPageProps {
 export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
   // Função para abrir o WhatsApp com mensagem predefinida
   const openWhatsApp = () => {
-    const phone = "5581882420323"; // Formato: código do país + DDD + número
+    const phone = "5581988242023"; // Formato: código do país + DDD + número
     const message = encodeURIComponent("Olá! Gostaria de mais informações e valores dos planos Bradesco..");
     window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
   };
