@@ -8,46 +8,54 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    text: "A Bradesco Seguros sempre nos atendeu com muita agilidade e atenção. O suporte durante internações e consultas foi fundamental para o bem-estar dos nossos colaboradores.",
-    name: "Patrícia Andrade",
-    role: "Gestora de RH, Grupo Real",
+    text: "Após contratar o plano empresarial da Bradesco Seguros, nossa taxa de absenteísmo caiu 18%. A ampla rede credenciada e os programas de medicina preventiva proporcionam uma segurança incrível para todos os colaboradores.",
+    name: "Ricardo Martins",
+    role: "Diretor Administrativo, TechPoint Sistemas",
   },
   {
-    text: "Tivemos uma redução significativa nos custos com saúde e nossos funcionários elogiam muito a rede referenciada e o atendimento humanizado. Recomendo a Bradesco Seguros.",
-    name: "Carlos Menezes",
-    role: "Diretor, Construtora Nova Era",
+    text: "Como gestor de RH, posso afirmar que a parceria com a Bradesco Seguros foi um divisor de águas para nossa empresa. A facilidade de gestão do plano, o atendimento personalizado e a satisfação dos funcionários são diferenciais notáveis.",
+    name: "Amanda Souza",
+    role: "Gerente de RH, Grupo Conexão",
   },
   {
-    text: "O programa de medicina preventiva da Bradesco Seguros fez toda diferença para a saúde dos nossos colaboradores. Atendimento rápido e eficiente em todas as demandas.",
-    name: "Fernanda Lima",
-    role: "Supervisora, Tech Solutions",
+    text: "O que mais me impressionou no plano empresarial da Bradesco Seguros foi a agilidade na autorização de procedimentos. Nossa equipe tem acesso a hospitais de referência e os canais digitais simplificaram todos os processos administrativos.",
+    name: "Carlos Mendonça",
+    role: "CEO, Construtora Horizonte",
+  },
+  {
+    text: "Após cotação com várias operadoras, escolhemos a Bradesco Seguros pela melhor relação custo-benefício. Hoje, 97% dos nossos colaboradores classificam o plano como excelente nas pesquisas internas de satisfação.",
+    name: "Mariana Oliveira",
+    role: "Diretora Financeira, Grupo Inovar",
   },
 ];
 
 export default function TestimonialsSection() {
   return (
     <section id="depoimentos" className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            O que nossos clientes dizem
-          </h2>          <p className="text-xl text-gray-600">
-            Empresas que confiam na Bradesco Seguros para cuidar da saúde de seus colaboradores
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">        <div className="text-center mb-10 sm:mb-16">
+          <span className="inline-block px-4 py-1 bg-red-100 text-bradesco-red rounded-full text-sm font-medium mb-3">Casos de sucesso</span>
+          <h2 className="text-2xl xs:text-3xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+            O que nossos clientes empresariais dizem
+          </h2>
+          <p className="text-sm xs:text-base sm:text-xl text-gray-600 max-w-3xl mx-auto">
+            Gestores e empresários que confiam na Bradesco Seguros para cuidar da saúde de suas equipes e impulsionar seus negócios
           </p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-8">
+        </div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {testimonials.map((t, idx) => (
-            <div key={idx} className="bg-white p-8 rounded-xl shadow-lg">
-              <div className="flex items-center mb-4">
+            <div key={idx} className="bg-white p-4 sm:p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              <div className="flex items-center mb-3">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                  <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current" />
                 ))}
               </div>
-              <p className="text-gray-600 mb-6">{`"${t.text}"`}</p>
-              <div className="flex items-center">
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">{`"${t.text}"`}</p>
+              <div className="flex items-center border-t border-gray-100 pt-3">
+                <div className="w-8 h-8 rounded-full bg-bradesco-red text-white flex items-center justify-center font-semibold mr-3">
+                  {t.name.charAt(0)}
+                </div>
                 <div>
-                  <div className="font-semibold text-gray-900">{t.name}</div>
-                  <div className="text-gray-600">{t.role}</div>
+                  <div className="font-semibold text-sm sm:text-base text-gray-900">{t.name}</div>
+                  <div className="text-xs sm:text-sm text-gray-600">{t.role}</div>
                 </div>
               </div>
             </div>
