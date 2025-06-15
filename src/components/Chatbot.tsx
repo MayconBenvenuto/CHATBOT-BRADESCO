@@ -21,7 +21,6 @@ type ChatStep =
   | "nome_plano"
   | "valor_plano"
   | "dificuldade"
-  | "interesse_plano"
   | "finalizado";
 
 interface ChatData {
@@ -36,7 +35,6 @@ interface ChatData {
   nomePlanoAtual: string;
   valorPlanoAtual: string;
   maiorDificuldade: string;
-  interessePlano: string; // Novo campo para interesse do lead
 }
 
 interface Message {
@@ -192,8 +190,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
         break;
     }
     dispatch({ type: "SET_INPUT", payload: value });
-  };
-  const getNextStep = (currentStep: ChatStep, data: Partial<ChatData>): ChatStep => {
+  };  const getNextStep = (currentStep: ChatStep, data: Partial<ChatData>): ChatStep => {
     switch (currentStep) {
       case "nome": return "whatsapp";
       case "whatsapp": return "numero_cnpj";
@@ -201,11 +198,10 @@ export default function Chatbot({ onClose }: ChatbotProps) {
       case "plano_atual": return data.temPlanoAtual ? "nome_plano" : "dificuldade";
       case "nome_plano": return "valor_plano";
       case "valor_plano": return "dificuldade";
-      case "dificuldade": return "interesse_plano";
-      case "interesse_plano": return "finalizado";
+      case "dificuldade": return "finalizado"; // Modificado: agora vai direto para finalizado
       default: return "finalizado";
     }
-  };  const getBotMessage = (step: ChatStep, data: Partial<ChatData>): { text: string; options?: string[] } => {
+  };const getBotMessage = (step: ChatStep, data: Partial<ChatData>): { text: string; options?: string[] } => {
   switch (step) {
     case "whatsapp": 
       return { text: `Perfeito, ${data.nome}! 📱 Agora preciso do seu WhatsApp para nosso consultor entrar em contato:` };
@@ -234,19 +230,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
           "Burocracia excessiva",
           "Outro"
         ]
-      };
-    case "interesse_plano":
-      return {
-        text: "🔍 Qual tipo de plano da Bradesco Seguros mais lhe interessa?",
-        options: [
-          "Bradesco Saúde Empresarial",
-          "Bradesco Saúde PME",
-          "Bradesco Dental",
-          "Plano com Coparticipação",
-          "Plano sem Coparticipação",
-          "Não tenho certeza, preciso de orientação"
-        ]
-      };
+      };    // Removido case "interesse_plano"
     case "finalizado": 
       return { text: `🎉 Perfeito, ${data.nome}! Recebi todas as informações. Nossa equipe analisará seu perfil e entrará em contato em até 24 horas com as melhores opções para sua empresa. Obrigada!` };
     default: 
@@ -336,9 +320,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
       case "numero_cnpj": newData.numeroCnpj = value; break;
       case "plano_atual": newData.temPlanoAtual = value.toLowerCase() === "sim"; break;
       case "nome_plano": newData.nomePlanoAtual = value; break;
-      case "valor_plano": newData.valorPlanoAtual = value; break;
-      case "dificuldade": newData.maiorDificuldade = value; break;
-      case "interesse_plano": newData.interessePlano = value; break;
+      case "valor_plano": newData.valorPlanoAtual = value; break;      case "dificuldade": newData.maiorDificuldade = value; break;
     }
 
     const nextStep = getNextStep(step, newData);
@@ -375,10 +357,8 @@ export default function Chatbot({ onClose }: ChatbotProps) {
           dadosEmpresa: newData.dadosEmpresa, // Incluindo dados da empresa
           temPlanoAtual: newData.temPlanoAtual,
           nomePlanoAtual: newData.nomePlanoAtual,
-          valorPlanoAtual: newData.valorPlanoAtual,
-          maiorDificuldade: newData.maiorDificuldade,
-          interessePlano: newData.interessePlano,
-          status: step === "interesse_plano" ? "completo" : "em_andamento",
+          valorPlanoAtual: newData.valorPlanoAtual,          maiorDificuldade: newData.maiorDificuldade,
+          status: step === "dificuldade" ? "completo" : "em_andamento", // Atualizado: agora a conclusão é na etapa "dificuldade"
         });
         
         await updateLead({
@@ -390,8 +370,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
           nomePlanoAtual: newData.nomePlanoAtual,
           valorPlanoAtual: newData.valorPlanoAtual,
           maiorDificuldade: newData.maiorDificuldade,
-          interessePlano: newData.interessePlano,
-          status: step === "interesse_plano" ? "completo" : "em_andamento",
+          status: step === "dificuldade" ? "completo" : "em_andamento", // Atualizado: agora a conclusão é na etapa "dificuldade"
         });
       }
     } catch (error) {
@@ -405,14 +384,12 @@ export default function Chatbot({ onClose }: ChatbotProps) {
         console.log("Finalizando fluxo do chatbot com leadId:", currentLeadId);        await updateLead({
           leadId: currentLeadId,
           status: "completo",
-          // Garantimos que todas as informações estejam atualizadas
-          enquadramentoCnpj: newData.enquadramentoCnpj,
+          // Garantimos que todas as informações estejam atualizadas          enquadramentoCnpj: newData.enquadramentoCnpj,
           numeroCnpj: newData.numeroCnpj,
           temPlanoAtual: newData.temPlanoAtual,
           nomePlanoAtual: newData.nomePlanoAtual,
           valorPlanoAtual: newData.valorPlanoAtual,
           maiorDificuldade: newData.maiorDificuldade,
-          interessePlano: newData.interessePlano,
         });
         
         // Adicionamos um pequeno delay para garantir que a atualização foi concluída
@@ -460,8 +437,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
 
     const botResponse = getBotMessage(nextStep, newData);
     addBotMessage(botResponse.text, botResponse.options);
-  };
-    const getStepIcon = (step: ChatStep) => {
+  };    const getStepIcon = (step: ChatStep) => {
     switch (step) {
       case "nome": return "👤";
       case "whatsapp": return "📱";
@@ -474,7 +450,6 @@ export default function Chatbot({ onClose }: ChatbotProps) {
       default: return "💬";
     }
   };
-
   const getProgressPercentage = () => {
     const steps = ["nome", "whatsapp", "numero_cnpj", "plano_atual", "nome_plano", "valor_plano", "dificuldade", "finalizado"];
     const currentIndex = steps.indexOf(step);
