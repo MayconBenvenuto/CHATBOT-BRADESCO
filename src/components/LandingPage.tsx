@@ -3,7 +3,7 @@ import DifferentialsSection from "./DifferentialsSection";
 import TestimonialsSection from "./TestimonialsSection";
 import CTASection from "./CTASection";
 import Footer from "./Footer";
-import { CheckCircle, MessageCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 interface LandingPageProps {
   onOpenChatbot: () => void;
@@ -18,15 +18,14 @@ export default function LandingPage({ onOpenChatbot }: LandingPageProps) {
   };
 
   return (
-    <div className="min-h-screen">
-      {/* WhatsApp Button */}
+    <div className="min-h-screen">      {/* WhatsApp Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <button 
           onClick={openWhatsApp}
           className="bg-green-500 hover:bg-green-600 text-white rounded-full w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
           aria-label="Fale com um consultor pelo WhatsApp"
         >
-          <MessageCircle className="w-7 h-7 sm:w-8 sm:h-8" />
+          <img src="/whatsapp-logo.svg" alt="WhatsApp" className="w-7 h-7 sm:w-8 sm:h-8" />
         </button>
       </div>
 
