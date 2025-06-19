@@ -17,14 +17,13 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Contato</h3>
-            <div className="space-y-3">
-              <div className="flex items-center">
+            <div className="space-y-3">              <div className="flex items-center">
                 <Phone className="w-5 h-5 text-bradesco-red mr-3" />
-                <span className="text-gray-400">81 98824-2023</span>
+                <span className="text-gray-400">81 99299-8558</span>
               </div>
               <div className="flex items-center">
                 <Mail className="w-5 h-5 text-bradesco-blue mr-3" />
-                <span className="text-gray-400">brleao@gmail.com</span>
+                <span className="text-gray-400">brunoleao@belzseguros.com.br</span>
               </div>
               <div className="flex items-center">
                 <MapPin className="w-5 h-5 text-bradesco-red mr-3" />
