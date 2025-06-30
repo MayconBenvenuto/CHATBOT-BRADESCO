@@ -100,32 +100,34 @@ export const sendLeadEmail = action({
         <html>
         <head>
           <meta charset="utf-8">
-          <title>🔥 NOVO LEAD QUALIFICADO - ${lead.nome}</title>
+          <title>🔥 NOVO LEAD QUALIFICADO - SITE BRADESCO - ${lead.nome}</title>
           <style>
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; margin: 0; padding: 0; }
             .container { max-width: 700px; margin: 20px auto; padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #d80032, #005ca9); color: white; padding: 25px; text-align: center; border-radius: 8px 8px 0 0; }
+            .header { background: linear-gradient(135deg, #d80032, #b8002a); color: white; padding: 25px; text-align: center; border-radius: 8px 8px 0 0; }
             .header h1 { margin: 0; font-size: 24px; }
             .header h2 { margin: 5px 0 0; font-size: 20px; font-weight: normal; }
+            .header .site-origin { background-color: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 15px; font-size: 14px; margin-top: 10px; display: inline-block; }
             .content { padding: 25px; }
             .section { margin-bottom: 25px; background-color: #f9f9f9; padding: 20px; border-radius: 8px; border-left: 5px solid #d80032; }
             .section h3 { color: #d80032; border-bottom: 2px solid #eeeeee; padding-bottom: 8px; margin-top: 0; font-size: 18px; }
             .info-item { margin-bottom: 10px; font-size: 15px; }
-            .footer { text-align: center; padding: 20px; color: #777; font-size: 12px; }
+            .footer { text-align: center; padding: 20px; color: #777; font-size: 12px; background-color: #fafafa; border-top: 3px solid #d80032; }
             .whatsapp-button { text-decoration: none; background-color: #25D366; color: white !important; padding: 10px 18px; border-radius: 25px; font-weight: bold; display: inline-block; margin-left: 15px; }
+            .bradesco-badge { color: #d80032; font-weight: bold; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
               <h1>🔥 NOVO LEAD QUALIFICADO</h1>
+              <div class="site-origin">📍 CAPTURADO NO SITE BRADESCO</div>
               <h2>${lead.nome}</h2>
             </div>
             <div class="content">
               <div class="section">
                 <h3>👤 Dados de Contato</h3>
                 <div class="info-item"><strong>Nome:</strong> ${lead.nome}</div>
-                <div class="info-item"><strong>E-mail:</strong> ${lead.email}</div>
                 <div class="info-item" style="display: flex; align-items: center; justify-content: space-between;">
                   <span><strong>WhatsApp:</strong> ${lead.whatsapp}</span>
                   <a href="${whatsappLink}" target="_blank" class="whatsapp-button">Conversar</a>
@@ -151,7 +153,8 @@ export const sendLeadEmail = action({
               </div>
             </div>
             <div class="footer">
-              <p>Lead capturado em: ${new Date(lead._creationTime).toLocaleString("pt-BR", { timeZone: 'America/Sao_Paulo' })}</p>
+              <p><span class="bradesco-badge">🏦 LEAD CAPTURADO VIA SITE BRADESCO</span></p>
+              <p>Data de captura: ${new Date(lead._creationTime).toLocaleString("pt-BR", { timeZone: 'America/Sao_Paulo' })}</p>
             </div>
           </div>
         </body>
@@ -168,7 +171,7 @@ export const sendLeadEmail = action({
         const emailResponse = await resend.emails.send({
           from: emailFrom,
           to: emailDestination,
-          subject: `🔥 Lead PME Qualificado: ${lead.nome} ${lead.temCnpj ? `(${dadosEmpresa?.nome_fantasia || lead.numeroCnpj})` : ''}`,
+          subject: `🔥 Lead PME Qualificado - SITE BRADESCO: ${lead.nome} ${lead.temCnpj ? `(${dadosEmpresa?.nome_fantasia || lead.numeroCnpj})` : ''}`,
           html: emailContent,
         });
         
