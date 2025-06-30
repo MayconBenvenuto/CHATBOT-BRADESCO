@@ -16,11 +16,11 @@ interface ChatbotProps {
 type ChatStep =
   | "nome"
   | "whatsapp"
-  | "numero_cnpj" // Alterado para ser apenas número do CNPJ, não perguntamos mais se tem CNPJ
   | "plano_atual"
   | "nome_plano"
   | "valor_plano"
   | "dificuldade"
+  | "numero_cnpj" // Movido para penúltima posição
   | "finalizado";
 
 interface ChatData {
@@ -93,30 +93,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       };
     default:
       return state;
-  }
-}
-
-// !!! MUDANÇA AQUI: Nova função para validar CNPJ com a BrasilAPI !!!
-async function validateCnpjWithAPI(cnpj: string): Promise<{ isValid: boolean; dadosEmpresa?: any }> {
-  const cleanedCnpj = cnpj.replace(/\D/g, ""); // Remove pontos, traços e barras
-  if (cleanedCnpj.length !== 14) {
-    return { isValid: false };
-  }
-
-  try {
-    const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cleanedCnpj}`);
-    if (response.ok) {
-      // response.ok é true para status 200-299
-      const data = await response.json();
-      console.log("CNPJ Válido:", data); // Opcional: ver dados da empresa no console
-      return { isValid: true, dadosEmpresa: data };
-    }
-    return { isValid: false };
-  } catch (error) {
-    console.error("Erro ao validar CNPJ:", error);
-    // Se a API falhar, não bloqueamos o usuário, mas avisamos do problema.
-    toast.error("Não foi possível validar o CNPJ no momento. Tente novamente.");
-    return { isValid: false };
   }
 }
 
@@ -193,20 +169,18 @@ export default function Chatbot({ onClose }: ChatbotProps) {
   };  const getNextStep = (currentStep: ChatStep, data: Partial<ChatData>): ChatStep => {
     switch (currentStep) {
       case "nome": return "whatsapp";
-      case "whatsapp": return "numero_cnpj";
-      case "numero_cnpj": return "plano_atual";
+      case "whatsapp": return "plano_atual";
       case "plano_atual": return data.temPlanoAtual ? "nome_plano" : "dificuldade";
       case "nome_plano": return "valor_plano";
       case "valor_plano": return "dificuldade";
-      case "dificuldade": return "finalizado"; // Modificado: agora vai direto para finalizado
+      case "dificuldade": return "numero_cnpj";
+      case "numero_cnpj": return "finalizado";
       default: return "finalizado";
     }
   };const getBotMessage = (step: ChatStep, data: Partial<ChatData>): { text: string; options?: string[] } => {
   switch (step) {
     case "whatsapp": 
       return { text: `Perfeito, ${data.nome}! 📱 Agora preciso do seu WhatsApp para nosso consultor entrar em contato:` };
-    case "numero_cnpj":
-      return { text: "🏢 Qual seu CNPJ?" };
     case "plano_atual": 
       return { 
         text: "🏥 Vocês já possuem algum plano de saúde atualmente?", 
@@ -230,7 +204,9 @@ export default function Chatbot({ onClose }: ChatbotProps) {
           "Burocracia excessiva",
           "Outro"
         ]
-      };    // Removido case "interesse_plano"
+      };
+    case "numero_cnpj":
+      return { text: "🏢 Para finalizar, qual é o CNPJ da sua empresa? (Opcional - pode pular se preferir)" };
     case "finalizado": 
       return { text: `🎉 Perfeito, ${data.nome}! Recebi todas as informações. Nossa equipe analisará seu perfil e entrará em contato em até 24 horas com as melhores opções para sua empresa. Obrigada!` };
     default: 
@@ -247,8 +223,8 @@ export default function Chatbot({ onClose }: ChatbotProps) {
         return cleanPhone.length >= 10 && cleanPhone.length <= 11;
       }
       case "numero_cnpj": {
-        const cleanCnpj = value.replace(/\D/g, "");
-        return cleanCnpj.length === 14;
+        // CNPJ agora é opcional - sempre retorna true
+        return true;
       }
       case "valor_plano":
         return /\d+/.test(value);
@@ -275,7 +251,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
     if (e) e.preventDefault();
 
     const value = optionValue || input;
-    if (!value.trim()) return;
+    if (!value.trim() && step !== "numero_cnpj") return; // CNPJ pode estar vazio
 
     if (!validateInput(step, value)) {
       toast.error("Por favor, verifique o formato da informação inserida.");
@@ -283,44 +259,15 @@ export default function Chatbot({ onClose }: ChatbotProps) {
     }
 
     const newData = { ...chatData };
-    
-    // Validação e obtenção dos dados do CNPJ antes de prosseguir
-    if (step === "numero_cnpj") {
-      dispatch({ type: "SET_IS_TYPING", payload: true }); // Mostra feedback de "validando"
-      toast.loading("Validando CNPJ...");
-      
-      const cnpjResult = await validateCnpjWithAPI(value);
-      dispatch({ type: "SET_IS_TYPING", payload: false }); // Esconde feedback
-      toast.dismiss(); // Remove o toast de loading
 
-      if (!cnpjResult.isValid) {
-        toast.error("❌ CNPJ inválido ou não encontrado. Por favor, verifique o número digitado.");
-        return; // Interrompe a execução se o CNPJ for inválido
-      }
-      
-      // Armazena os dados da empresa no estado
-      if (cnpjResult.dadosEmpresa) {
-        newData.dadosEmpresa = cnpjResult.dadosEmpresa;
-        
-        // Adiciona uma mensagem do bot informando os dados validados
-        const empresaInfo = `✅ CNPJ Validado!\n\nEmpresa: ${cnpjResult.dadosEmpresa.razao_social || 'N/A'}\nNome Fantasia: ${cnpjResult.dadosEmpresa.nome_fantasia || 'N/A'}\nCidade: ${cnpjResult.dadosEmpresa.municipio || 'N/A'}/${cnpjResult.dadosEmpresa.uf || 'N/A'}`;
-        
-        // Adicionamos a mensagem do bot mostrando os dados da empresa
-        dispatch({ type: "ADD_MESSAGE", payload: { type: "bot", text: empresaInfo } });
-        
-        toast.success(`CNPJ validado: ${cnpjResult.dadosEmpresa.nome_fantasia || cnpjResult.dadosEmpresa.razao_social || 'Empresa'}`);
-      } else {
-        toast.success("✅ CNPJ validado com sucesso!");
-      }
-    }
-
-    dispatch({ type: "ADD_MESSAGE", payload: { type: "user", text: value } });    switch (step) {
+    dispatch({ type: "ADD_MESSAGE", payload: { type: "user", text: value || "Pular esta etapa" } });    switch (step) {
       case "nome": newData.nome = value; break;
       case "whatsapp": newData.whatsapp = value; break;
-      case "numero_cnpj": newData.numeroCnpj = value; break;
       case "plano_atual": newData.temPlanoAtual = value.toLowerCase() === "sim"; break;
       case "nome_plano": newData.nomePlanoAtual = value; break;
-      case "valor_plano": newData.valorPlanoAtual = value; break;      case "dificuldade": newData.maiorDificuldade = value; break;
+      case "valor_plano": newData.valorPlanoAtual = value; break;
+      case "dificuldade": newData.maiorDificuldade = value; break;
+      case "numero_cnpj": newData.numeroCnpj = value; break;
     }
 
     const nextStep = getNextStep(step, newData);
@@ -344,7 +291,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
           nome: newData.nome,
           whatsapp: newData.whatsapp,
           email: whatsappEmail,
-          temCnpj: true, // Como agora perguntamos diretamente o CNPJ, assumimos que tem CNPJ
+          temCnpj: false, // Inicialmente false, será atualizado depois se fornecido
         });
         
         console.log("Lead criado com ID:", id);
@@ -357,8 +304,9 @@ export default function Chatbot({ onClose }: ChatbotProps) {
           dadosEmpresa: newData.dadosEmpresa, // Incluindo dados da empresa
           temPlanoAtual: newData.temPlanoAtual,
           nomePlanoAtual: newData.nomePlanoAtual,
-          valorPlanoAtual: newData.valorPlanoAtual,          maiorDificuldade: newData.maiorDificuldade,
-          status: step === "dificuldade" ? "completo" : "em_andamento", // Atualizado: agora a conclusão é na etapa "dificuldade"
+          valorPlanoAtual: newData.valorPlanoAtual,
+          maiorDificuldade: newData.maiorDificuldade,
+          status: nextStep === "finalizado" ? "completo" : "em_andamento", // Corrigido: verifica se o próximo step é finalizado
         });
         
         await updateLead({
@@ -370,7 +318,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
           nomePlanoAtual: newData.nomePlanoAtual,
           valorPlanoAtual: newData.valorPlanoAtual,
           maiorDificuldade: newData.maiorDificuldade,
-          status: step === "dificuldade" ? "completo" : "em_andamento", // Atualizado: agora a conclusão é na etapa "dificuldade"
+          status: nextStep === "finalizado" ? "completo" : "em_andamento", // Corrigido: verifica se o próximo step é finalizado
         });
       }
     } catch (error) {
@@ -381,11 +329,16 @@ export default function Chatbot({ onClose }: ChatbotProps) {
     if (nextStep === "finalizado" && currentLeadId) {
       try {
         // Garantimos que todas as informações estejam atualizadas antes de enviar o email
-        console.log("Finalizando fluxo do chatbot com leadId:", currentLeadId);        await updateLead({
+        console.log("Finalizando fluxo do chatbot com leadId:", currentLeadId);
+        console.log("Dados finais:", newData);
+        
+        await updateLead({
           leadId: currentLeadId,
           status: "completo",
-          // Garantimos que todas as informações estejam atualizadas          enquadramentoCnpj: newData.enquadramentoCnpj,
-          numeroCnpj: newData.numeroCnpj,
+          // Garantimos que todas as informações estejam atualizadas
+          enquadramentoCnpj: newData.enquadramentoCnpj,
+          numeroCnpj: newData.numeroCnpj || "",
+          temCnpj: newData.numeroCnpj ? true : false,
           temPlanoAtual: newData.temPlanoAtual,
           nomePlanoAtual: newData.nomePlanoAtual,
           valorPlanoAtual: newData.valorPlanoAtual,
@@ -437,7 +390,57 @@ export default function Chatbot({ onClose }: ChatbotProps) {
 
     const botResponse = getBotMessage(nextStep, newData);
     addBotMessage(botResponse.text, botResponse.options);
-  };    const getStepIcon = (step: ChatStep) => {
+  };    const handleSkipStep = () => {
+    if (step === "numero_cnpj") {
+      dispatch({ type: "ADD_MESSAGE", payload: { type: "user", text: "Pular esta etapa" } });
+      
+      const newData = { ...chatData };
+      newData.numeroCnpj = ""; // CNPJ vazio ao pular
+      
+      const nextStep = getNextStep(step, newData);
+      dispatch({ type: "PROCEED_STEP", payload: { nextStep, newData } });
+      
+      // Atualizar o lead quando pular o CNPJ (antes de finalizar)
+      if (leadId && nextStep === "finalizado") {
+        // Fazemos isso de forma assíncrona sem bloquear a UI
+        void (async () => {
+          try {
+            await updateLead({
+              leadId,
+              numeroCnpj: "",
+              temCnpj: false,
+              status: "completo",
+            });
+            
+            // Enviar email
+            console.log("Enviando email após pular CNPJ para leadId:", leadId);
+            toast.loading("Enviando suas informações...");
+            
+            try {
+              const emailResult = await sendEmail({ leadId });
+              console.log("Resultado do envio de email:", emailResult);
+              
+              if (emailResult.success) {
+                toast.success("✅ Informações enviadas com sucesso! Em breve nosso consultor entrará em contato.");
+              } else {
+                throw new Error("Falha ao enviar e-mail");
+              }
+            } catch (emailError: any) {
+              console.error("Erro ao enviar e-mail:", emailError);
+              toast.error(`❌ Erro ao enviar e-mail: ${emailError.message || "Erro desconhecido"}`);
+            }
+          } catch (error) {
+            console.error("Erro ao finalizar processo após pular CNPJ:", error);
+            toast.error("❌ Seus dados foram salvos, mas ocorreu um erro ao processá-los. Nossa equipe entrará em contato em breve!");
+          }
+        })();
+      }
+      
+      const botResponse = getBotMessage(nextStep, newData);
+      addBotMessage(botResponse.text, botResponse.options);
+    }
+  };
+    const getStepIcon = (step: ChatStep) => {
     switch (step) {
       case "nome": return "👤";
       case "whatsapp": return "📱";
@@ -451,7 +454,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
     }
   };
   const getProgressPercentage = () => {
-    const steps = ["nome", "whatsapp", "numero_cnpj", "plano_atual", "nome_plano", "valor_plano", "dificuldade", "finalizado"];
+    const steps = ["nome", "whatsapp", "plano_atual", "nome_plano", "valor_plano", "dificuldade", "numero_cnpj", "finalizado"];
     const currentIndex = steps.indexOf(step);
     return Math.round((currentIndex / (steps.length - 1)) * 100);
   };
@@ -479,6 +482,7 @@ export default function Chatbot({ onClose }: ChatbotProps) {
             inputRef={inputRef as React.RefObject<HTMLInputElement>}
             handleInputChange={handleInputChange}
             handleSubmit={handleSubmit as (e: React.FormEvent) => void}
+            handleSkipStep={handleSkipStep}
             getInputPlaceholder={getInputPlaceholder as (step: string) => string}
           />
         )}
