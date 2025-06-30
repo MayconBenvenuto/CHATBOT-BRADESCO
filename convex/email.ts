@@ -128,7 +128,6 @@ export const sendLeadEmail = action({
               <div class="section">
                 <h3>👤 Dados de Contato</h3>
                 <div class="info-item"><strong>Nome:</strong> ${lead.nome}</div>
-                <div class="info-item" style="display: flex; align-items: center; justify-content: space-between;">
                   <span><strong>WhatsApp:</strong> ${lead.whatsapp}</span>
                   <a href="${whatsappLink}" target="_blank" class="whatsapp-button">Conversar</a>
                 </div>
